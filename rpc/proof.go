@@ -90,5 +90,7 @@ func getContractData(address felt.Felt, state core.StateReader) (*ContractData, 
 		ClassHash: *classHash,
 		Nonce:     *nonce,
 		Root:      *cRoot,
+		// ref: https://github.com/eqlabs/pathfinder/blob/main/crates/rpc/src/pathfinder/methods/get_proof.rs#L254
+		ContractStateHashVersion: felt.Zero,
 	}, nil
 }
