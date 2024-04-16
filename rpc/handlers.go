@@ -66,6 +66,7 @@ var (
 
 	// These errors can be only be returned by Juno-specific methods.
 	ErrSubscriptionNotFound = &jsonrpc.Error{Code: 100, Message: "Subscription not found"}
+	ErrProofLimitExeeded    = &jsonrpc.Error{Code: 101, Message: "Too many storage keys requested"}
 )
 
 const (
@@ -1485,6 +1486,23 @@ func (h *Handler) estimateMessageFee(msg MsgFromL1, id BlockID, f estimateFeeHan
 	return &estimates[0], nil
 }
 
+// GetProof returns merkle proofs for a contract's storage. This allows you to verify a contract's state for a specific Starknet block
+//
+// It follows the definition defined here:
+// https://github.com/eqlabs/pathfinder/blob/main/doc/rpc/pathfinder_rpc_api.json#L23
+func (h *Handler) GetProof(ctx context.Context, blockID BlockID, contractAddress felt.Felt, keys []felt.Felt) (*StorageProofs, *jsonrpc.Error) {
+	if len(keys) >= 100 {
+		return nil, ErrProofLimitExeeded
+	}
+	state, stateCloser, rpcErr := h.stateByBlockID(&blockID)
+	if rpcErr != nil {
+		return nil, rpcErr
+	}
+	defer h.callAndLogErr(stateCloser, "Error closing state reader in getClass")
+	sproofs, err := getStorageProofs(contractAddress, state, keys)
+
+}
+
 // TraceTransaction returns the trace for a given executed transaction, including internal calls
 //
 // It follows the specification defined here:
@@ -2025,6 +2043,11 @@ func (h *Handler) Methods() ([]jsonrpc.Method, string) { //nolint: funlen
 			Handler: h.Version,
 		},
 		{
+			Name:    "juno_getProof",
+			Params:  []jsonrpc.Parameter{{Name: "block_id"}, {Name: "contract_address"}, {Name: "key"}},
+			Handler: h.GetProof,
+		},
+		{
 			Name:    "starknet_getTransactionStatus",
 			Params:  []jsonrpc.Parameter{{Name: "transaction_hash"}},
 			Handler: h.TransactionStatus,
@@ -2181,6 +2204,11 @@ func (h *Handler) MethodsV0_6() ([]jsonrpc.Method, string) { //nolint: funlen
 		{
 			Name:    "juno_version",
 			Handler: h.Version,
+		},
+		{
+			Name:    "juno_getProof",
+			Params:  []jsonrpc.Parameter{{Name: "block_id"}, {Name: "contract_address"}, {Name: "key"}},
+			Handler: h.GetProof,
 		},
 		{
 			Name:    "starknet_getTransactionStatus",
