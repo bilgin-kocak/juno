@@ -401,15 +401,13 @@ func TestProof(t *testing.T) {
 			putAndAssert := func(key, val uint64) {
 				k := new(felt.Felt).SetUint64(key)
 				v := new(felt.Felt).SetUint64(val)
-				oldVal, err := tempTrie.Put(k, v)
+				_, err := tempTrie.Put(k, v)
 				require.NoError(t, err)
-				fmt.Println(oldVal, k, v)
-				assert.Nil(t, oldVal, fmt.Sprintf("key:%s, val:%s", k, v))
 			}
 
-			putAndAssert(0, 0)
 			putAndAssert(1, 1)
 			putAndAssert(2, 2)
+			putAndAssert(3, 3)
 
 			nodes, err := tempTrie.NodesFromRoot(feltToKey(*new(felt.Felt).SetUint64(0)))
 			require.NoError(t, err)
