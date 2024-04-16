@@ -1499,8 +1499,8 @@ func (h *Handler) GetProof(ctx context.Context, blockID BlockID, contractAddress
 		return nil, rpcErr
 	}
 	defer h.callAndLogErr(stateCloser, "Error closing state reader in getClass")
-	sproofs, err := getStorageProofs(contractAddress, state, keys)
 
+	return getStorageProofs(contractAddress, state, keys)
 }
 
 // TraceTransaction returns the trace for a given executed transaction, including internal calls

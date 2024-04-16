@@ -3,6 +3,7 @@ package rpc
 import (
 	"github.com/NethermindEth/juno/core"
 	"github.com/NethermindEth/juno/core/felt"
+	"github.com/NethermindEth/juno/jsonrpc"
 )
 
 type StorageProofs struct {
@@ -46,11 +47,30 @@ type EDGE_NODE struct {
 	} `json:"edge"`
 }
 
-func getStorageProofs(address felt.Felt, state core.StateReader, keys []felt.Felt) (*StorageProofs, error) {
-	// Need to export roots, and nodes from root to key
+func getStorageProofs(address felt.Felt, state core.StateReader, keys []felt.Felt) (*StorageProofs, *jsonrpc.Error) {
+	sRoot, err := state.StateTrieRoot()
+	if err != nil {
+		return nil, jsonrpc.Err(jsonrpc.InternalError, err)
+	}
+	cRoot, err := state.ClassTrieRoot()
+	if err != nil {
+		return nil, jsonrpc.Err(jsonrpc.InternalError, err)
+	}
+
+	cData, err := getContractData(address, state)
+	if err != nil {
+		return nil, jsonrpc.Err(jsonrpc.InternalError, err)
+	}
+
+	return &StorageProofs{
+		StateCommitment: *sRoot,
+		ClassCommitment: *cRoot,
+		// ContractProof: , // Todo
+		ContractData: cData,
+	}, nil
 }
 
-func getContractData(address felt.Felt, state core.StateHistoryReader) (*ContractData, error) {
+func getContractData(address felt.Felt, state core.StateReader) (*ContractData, error) {
 	classHash, err := state.ContractClassHash(&address)
 	if err != nil {
 		return nil, err
@@ -59,12 +79,16 @@ func getContractData(address felt.Felt, state core.StateHistoryReader) (*Contrac
 	if err != nil {
 		return nil, err
 	}
-	// Todo: impl ContractRoot
+	cRoot, err := state.ContractStorageRoot(&address)
+	if err != nil {
+		return nil, err
+	}
 	// Todo: impl ContractStateHashVersion
 	// Todo: imp StorageProofs
 
 	return &ContractData{
 		ClassHash: *classHash,
 		Nonce:     *nonce,
+		Root:      *cRoot,
 	}, nil
 }
