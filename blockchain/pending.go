@@ -59,6 +59,10 @@ func (p *PendingState) ContractStorageRoot(addr *felt.Felt) (*felt.Felt, error) 
 	return nil, ErrParentDoesNotMatchHead
 }
 
+func (p *PendingState) StateTrieRoot() (*felt.Felt, error) {
+	return nil, ErrNoStateTrieRoot
+}
+
 func (p *PendingState) Class(classHash *felt.Felt) (*core.DeclaredClass, error) {
 	if class, found := p.newClasses[*classHash]; found {
 		return &core.DeclaredClass{

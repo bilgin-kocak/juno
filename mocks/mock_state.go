@@ -189,3 +189,33 @@ func (mr *MockStateHistoryReaderMockRecorder) ContractStorageRootAt(arg0, arg1 a
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ContractStorageRootAt", reflect.TypeOf((*MockStateHistoryReader)(nil).ContractStorageRootAt), arg0, arg1)
 }
+
+// StateTrieRoot mocks base method.
+func (m *MockStateHistoryReader) StateTrieRoot() (*felt.Felt, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StateTrieRoot")
+	ret0, _ := ret[0].(*felt.Felt)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// StateTrieRoot indicates an expected call of StateTrieRoot.
+func (mr *MockStateHistoryReaderMockRecorder) StateTrieRoot() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StateTrieRoot", reflect.TypeOf((*MockStateHistoryReader)(nil).StateTrieRoot))
+}
+
+// StateTrieRootAt mocks base method.
+func (m *MockStateHistoryReader) StateTrieRootAt(arg0 uint64) (*felt.Felt, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "StateTrieRootAt", arg0)
+	ret0, _ := ret[0].(*felt.Felt)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// StateTrieRootAt indicates an expected call of StateTrieRootAt.
+func (mr *MockStateHistoryReaderMockRecorder) StateTrieRootAt(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "StateTrieRootAt", reflect.TypeOf((*MockStateHistoryReader)(nil).StateTrieRootAt), arg0)
+}

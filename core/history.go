@@ -98,6 +98,11 @@ func (h *history) ContractStorageRootAt(contractAddress *felt.Felt, height uint6
 	panic("todo")
 }
 
+// StateTrieRootAt returns the root of the storage trie at the height `height`
+func (h *history) StateTrieRootAt(height uint64) (*felt.Felt, error) {
+	panic("todo")
+}
+
 func nonceLogKey(contractAddress *felt.Felt) []byte {
 	return db.ContractNonceHistory.Key(contractAddress.Marshal())
 }
