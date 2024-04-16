@@ -167,6 +167,49 @@ func (t *Trie) nodesFromRoot(key *Key) ([]storageNode, error) {
 	return nodes, nil
 }
 
+func (t *Trie) NodesFromRoot(key *Key) ([]storageNode, error) {
+	return t.nodesFromRoot(key)
+}
+
+// proof returns the set of sibling nodes, from the key to the root
+func (t *Trie) proof(key *Key) ([]storageNode, error) {
+	nodesFromRoot, err := t.nodesFromRoot(key)
+	if err != nil {
+		return nil, err
+	}
+	siblingNodes := []storageNode{nodesFromRoot[0]}
+	for i := 0; i < len(nodesFromRoot)-1; i++ {
+		siblingNode, err := t.getSibling(&nodesFromRoot[i], &nodesFromRoot[i+1])
+		if err != nil {
+			return nil, err
+		}
+		siblingNodes = append(siblingNodes, *siblingNode)
+	}
+
+	return siblingNodes, nil
+}
+
+func (t *Trie) getSibling(parent *storageNode, givenChild *storageNode) (*storageNode, error) {
+	leftChild := parent.node.Left
+	rightChild := parent.node.Right
+	var siblingKey *Key
+	switch givenChild.key {
+	case leftChild:
+		siblingKey = leftChild
+	case rightChild:
+		siblingKey = rightChild
+	}
+	node, err := t.storage.Get(siblingKey)
+	if err != nil {
+		return nil, err
+	}
+	return &storageNode{
+		node: node,
+		key:  siblingKey,
+	}, nil
+
+}
+
 // Get the corresponding `value` for a `key`
 func (t *Trie) Get(key *felt.Felt) (*felt.Felt, error) {
 	storageKey := t.feltToKey(key)

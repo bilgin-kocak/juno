@@ -1,6 +1,7 @@
 package trie_test
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 
@@ -374,4 +375,48 @@ func BenchmarkTriePut(b *testing.B) {
 		}
 		return t.Commit()
 	}))
+}
+
+func TestProof(t *testing.T) {
+	feltToKey := func(key felt.Felt) *trie.Key {
+		kBytes := key.Bytes()
+		k := trie.NewKey(251, kBytes[:])
+		return &k
+	}
+	t.Run("put zero to empty trie", func(t *testing.T) {
+		require.NoError(t, trie.RunOnTempTrie(251, func(tempTrie *trie.Trie) error {
+			key := new(felt.Felt).SetUint64(1)
+			zeroVal := new(felt.Felt).SetUint64(0)
+
+			oldVal, err := tempTrie.Put(key, zeroVal)
+			require.NoError(t, err)
+
+			assert.Nil(t, oldVal)
+
+			return nil
+		}))
+	})
+	t.Run("todo - make sure proofs are correct", func(t *testing.T) {
+		require.NoError(t, trie.RunOnTempTrie(251, func(tempTrie *trie.Trie) error {
+			putAndAssert := func(key, val uint64) {
+				k := new(felt.Felt).SetUint64(key)
+				v := new(felt.Felt).SetUint64(val)
+				oldVal, err := tempTrie.Put(k, v)
+				require.NoError(t, err)
+				fmt.Println(oldVal, k, v)
+				assert.Nil(t, oldVal, fmt.Sprintf("key:%s, val:%s", k, v))
+			}
+
+			putAndAssert(0, 0)
+			putAndAssert(1, 1)
+			putAndAssert(2, 2)
+
+			nodes, err := tempTrie.NodesFromRoot(feltToKey(*new(felt.Felt).SetUint64(0)))
+			require.NoError(t, err)
+			fmt.Println(nodes)
+
+			return nil
+		}))
+	})
+
 }
