@@ -30,6 +30,7 @@ type StateHistoryReader interface {
 	StateReader
 
 	ContractStorageAt(addr, key *felt.Felt, blockNumber uint64) (*felt.Felt, error)
+	ContractStorageRootAt(addr *felt.Felt, blockNumber uint64) (*felt.Felt, error)
 	ContractNonceAt(addr *felt.Felt, blockNumber uint64) (*felt.Felt, error)
 	ContractClassHashAt(addr *felt.Felt, blockNumber uint64) (*felt.Felt, error)
 	ContractIsAlreadyDeployedAt(addr *felt.Felt, blockNumber uint64) (bool, error)
@@ -39,6 +40,7 @@ type StateReader interface {
 	ContractClassHash(addr *felt.Felt) (*felt.Felt, error)
 	ContractNonce(addr *felt.Felt) (*felt.Felt, error)
 	ContractStorage(addr, key *felt.Felt) (*felt.Felt, error)
+	ContractStorageRoot(addr *felt.Felt) (*felt.Felt, error)
 	Class(classHash *felt.Felt) (*DeclaredClass, error)
 }
 
@@ -83,6 +85,11 @@ func (s *State) ContractNonce(addr *felt.Felt) (*felt.Felt, error) {
 // ContractStorage returns value of a key in the storage of the contract at the given address.
 func (s *State) ContractStorage(addr, key *felt.Felt) (*felt.Felt, error) {
 	return ContractStorage(addr, key, s.txn)
+}
+
+// ContractStorageRoot returns the root of the contract storage trie
+func (s *State) ContractStorageRoot(addr *felt.Felt) (*felt.Felt, error) {
+	return ContractStorageRoot(addr, s.txn)
 }
 
 // Root returns the state commitment.

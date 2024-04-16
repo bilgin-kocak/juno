@@ -159,3 +159,33 @@ func (mr *MockStateHistoryReaderMockRecorder) ContractStorageAt(arg0, arg1, arg2
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ContractStorageAt", reflect.TypeOf((*MockStateHistoryReader)(nil).ContractStorageAt), arg0, arg1, arg2)
 }
+
+// ContractStorageRoot mocks base method.
+func (m *MockStateHistoryReader) ContractStorageRoot(arg0 *felt.Felt) (*felt.Felt, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ContractStorageRoot", arg0)
+	ret0, _ := ret[0].(*felt.Felt)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ContractStorageRoot indicates an expected call of ContractStorageRoot.
+func (mr *MockStateHistoryReaderMockRecorder) ContractStorageRoot(arg0 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ContractStorageRoot", reflect.TypeOf((*MockStateHistoryReader)(nil).ContractStorageRoot), arg0)
+}
+
+// ContractStorageRootAt mocks base method.
+func (m *MockStateHistoryReader) ContractStorageRootAt(arg0 *felt.Felt, arg1 uint64) (*felt.Felt, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ContractStorageRootAt", arg0, arg1)
+	ret0, _ := ret[0].(*felt.Felt)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ContractStorageRootAt indicates an expected call of ContractStorageRootAt.
+func (mr *MockStateHistoryReaderMockRecorder) ContractStorageRootAt(arg0, arg1 any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ContractStorageRootAt", reflect.TypeOf((*MockStateHistoryReader)(nil).ContractStorageRootAt), arg0, arg1)
+}

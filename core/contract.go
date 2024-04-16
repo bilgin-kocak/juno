@@ -175,6 +175,14 @@ func ContractStorage(addr, key *felt.Felt, txn db.Transaction) (*felt.Felt, erro
 	return cStorage.Get(key)
 }
 
+func ContractStorageRoot(addr *felt.Felt, txn db.Transaction) (*felt.Felt, error) {
+	cStorage, err := storage(addr, txn)
+	if err != nil {
+		return nil, err
+	}
+	return cStorage.Root()
+}
+
 // ContractClassHash returns hash of the class that the contract at the given address instantiates.
 func ContractClassHash(addr *felt.Felt, txn db.Transaction) (*felt.Felt, error) {
 	key := db.ContractClassHash.Key(addr.Marshal())

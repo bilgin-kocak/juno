@@ -67,6 +67,10 @@ func storageLogKey(contractAddress, storageLocation *felt.Felt) []byte {
 	return db.ContractStorageHistory.Key(contractAddress.Marshal(), storageLocation.Marshal())
 }
 
+func storageRootLogKey(contractAddress, storageLocation *felt.Felt) []byte {
+	return db.ContractStorageHistory.Key(contractAddress.Marshal())
+}
+
 // LogContractStorage logs the old value of a storage location for the given contract which changed on height `height`
 func (h *history) LogContractStorage(contractAddress, storageLocation, oldValue *felt.Felt, height uint64) error {
 	key := storageLogKey(contractAddress, storageLocation)
@@ -87,6 +91,11 @@ func (h *history) ContractStorageAt(contractAddress, storageLocation *felt.Felt,
 	}
 
 	return new(felt.Felt).SetBytes(value), nil
+}
+
+// ContractStorageRootAt returns the root of the contracts storage trie at the height `height`
+func (h *history) ContractStorageRootAt(contractAddress *felt.Felt, height uint64) (*felt.Felt, error) {
+	panic("todo")
 }
 
 func nonceLogKey(contractAddress *felt.Felt) []byte {

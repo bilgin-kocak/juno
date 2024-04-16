@@ -64,6 +64,21 @@ func (s *stateSnapshot) ContractStorage(addr, key *felt.Felt) (*felt.Felt, error
 	return val, nil
 }
 
+func (s *stateSnapshot) ContractStorageRoot(addr *felt.Felt) (*felt.Felt, error) {
+	if err := s.checkDeployed(addr); err != nil {
+		return nil, err
+	}
+
+	val, err := s.state.ContractStorageRootAt(addr, s.blockNumber)
+	if err != nil {
+		if errors.Is(err, ErrCheckHeadState) {
+			return s.state.ContractStorageRoot(addr)
+		}
+		return nil, err
+	}
+	return val, nil
+}
+
 func (s *stateSnapshot) checkDeployed(addr *felt.Felt) error {
 	isDeployed, err := s.state.ContractIsAlreadyDeployedAt(addr, s.blockNumber)
 	if err != nil {
