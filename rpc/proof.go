@@ -83,7 +83,6 @@ func getContractData(address felt.Felt, state core.StateReader) (*ContractData, 
 	if err != nil {
 		return nil, err
 	}
-	// Todo: impl ContractStateHashVersion
 	// Todo: imp StorageProofs
 
 	return &ContractData{
