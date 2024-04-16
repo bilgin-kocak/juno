@@ -63,6 +63,10 @@ func (p *PendingState) StateTrieRoot() (*felt.Felt, error) {
 	return nil, ErrNoStateTrieRoot
 }
 
+func (p *PendingState) ClassTrieRoot() (*felt.Felt, error) {
+	return nil, ErrNoClassTrieRoot
+}
+
 func (p *PendingState) Class(classHash *felt.Felt) (*core.DeclaredClass, error) {
 	if class, found := p.newClasses[*classHash]; found {
 		return &core.DeclaredClass{

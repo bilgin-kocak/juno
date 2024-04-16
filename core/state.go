@@ -35,6 +35,7 @@ type StateHistoryReader interface {
 	ContractClassHashAt(addr *felt.Felt, blockNumber uint64) (*felt.Felt, error)
 	ContractIsAlreadyDeployedAt(addr *felt.Felt, blockNumber uint64) (bool, error)
 	StateTrieRootAt(blockNumber uint64) (*felt.Felt, error)
+	ClassTrieRootAt(blockNumber uint64) (*felt.Felt, error)
 }
 
 type StateReader interface {
@@ -44,6 +45,7 @@ type StateReader interface {
 	ContractStorageRoot(addr *felt.Felt) (*felt.Felt, error)
 	Class(classHash *felt.Felt) (*DeclaredClass, error)
 	StateTrieRoot() (*felt.Felt, error)
+	ClassTrieRoot() (*felt.Felt, error)
 }
 
 type State struct {
@@ -110,6 +112,24 @@ func (s *State) StateTrieRoot() (*felt.Felt, error) {
 		return nil, err
 	}
 	return storageRoot, nil
+}
+
+// ContractStorageRoot returns the root of the contract storage trie
+func (s *State) ClassTrieRoot() (*felt.Felt, error) {
+	var classesRoot *felt.Felt
+
+	cTrie, closer, err := s.classesTrie()
+	if err != nil {
+		return nil, err
+	}
+	if classesRoot, err = cTrie.Root(); err != nil {
+		return nil, err
+	}
+
+	if err = closer(); err != nil {
+		return nil, err
+	}
+	return classesRoot, nil
 }
 
 // Root returns the state commitment.

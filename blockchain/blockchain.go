@@ -53,6 +53,7 @@ var (
 	ErrParentDoesNotMatchHead       = errors.New("block's parent hash does not match head block hash")
 	ErrNoPendingContractStorageRoot = errors.New("the contracts storage root has not yet been caluclated for the pending block")
 	ErrNoStateTrieRoot              = errors.New("the root of the state trie has not been yet caluclated for the pending block")
+	ErrNoClassTrieRoot              = errors.New("the root of the class trie has not been yet caluclated for the pending block")
 	supportedStarknetVersion        = semver.MustParse("0.13.1")
 )
 

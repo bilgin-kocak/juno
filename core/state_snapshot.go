@@ -91,6 +91,18 @@ func (s *stateSnapshot) StateTrieRoot() (*felt.Felt, error) {
 	return val, nil
 }
 
+func (s *stateSnapshot) ClassTrieRoot() (*felt.Felt, error) {
+
+	val, err := s.state.ClassTrieRootAt(s.blockNumber)
+	if err != nil {
+		if errors.Is(err, ErrCheckHeadState) {
+			return s.state.ClassTrieRoot()
+		}
+		return nil, err
+	}
+	return val, nil
+}
+
 func (s *stateSnapshot) checkDeployed(addr *felt.Felt) error {
 	isDeployed, err := s.state.ContractIsAlreadyDeployedAt(addr, s.blockNumber)
 	if err != nil {

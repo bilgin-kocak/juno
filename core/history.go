@@ -103,6 +103,11 @@ func (h *history) StateTrieRootAt(height uint64) (*felt.Felt, error) {
 	panic("todo")
 }
 
+// ClassesTrieRootAt returns the root of the class trie at the height `height`
+func (h *history) ClassTrieRootAt(height uint64) (*felt.Felt, error) {
+	panic("todo")
+}
+
 func nonceLogKey(contractAddress *felt.Felt) []byte {
 	return db.ContractNonceHistory.Key(contractAddress.Marshal())
 }
