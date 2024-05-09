@@ -12,6 +12,7 @@ import (
 	"github.com/NethermindEth/juno/clients/feeder"
 	"github.com/NethermindEth/juno/core"
 	"github.com/NethermindEth/juno/core/felt"
+	"github.com/NethermindEth/juno/core/trie"
 	"github.com/NethermindEth/juno/feed"
 	"github.com/NethermindEth/juno/jsonrpc"
 	"github.com/NethermindEth/juno/sync"
@@ -41,6 +42,7 @@ var (
 	ErrTooManyKeysInFilter             = &jsonrpc.Error{Code: 34, Message: "Too many keys provided in a filter"}
 	ErrContractError                   = &jsonrpc.Error{Code: 40, Message: "Contract error"}
 	ErrTransactionExecutionError       = &jsonrpc.Error{Code: 41, Message: "Transaction execution error"}
+	ErrFailedToSerialize               = &jsonrpc.Error{Code: 42, Message: "Failed to serialize response"}
 	ErrInvalidContractClass            = &jsonrpc.Error{Code: 50, Message: "Invalid contract class"}
 	ErrClassAlreadyDeclared            = &jsonrpc.Error{Code: 51, Message: "Class already declared"}
 	ErrInternal                        = &jsonrpc.Error{Code: jsonrpc.InternalError, Message: "Internal error"}
@@ -173,6 +175,37 @@ func (h *Handler) SpecVersion() (string, *jsonrpc.Error) {
 
 func (h *Handler) SpecVersionV0_6() (string, *jsonrpc.Error) {
 	return "0.6.0", nil
+}
+
+func (h *Handler) GetNodesFromRoot(key felt.Felt) (string, *jsonrpc.Error) {
+	// TODO: Implement this method
+	// Implement a new rpc method “juno_getNodesFromRoot(key felt.Felt)” 
+	// that returns the set of nodes from the root to the key for the classes Trie. 
+	// See nodesFromRoot(). Remember to implement tests for the new logic
+
+	stateReader, _, error := h.bcReader.HeadState()
+	if error != nil {
+		return "", ErrBlockNotFound
+	}
+	trie_ ,_, errTrie := stateReader.GlobalTrie()
+	if errTrie != nil {
+		return "", ErrBlockNotFound
+	}
+
+	key_ := trie_.ConvertFeltToKey(&key)
+	storageNodes, err := trie_.GetNodesFromRoot(&key_)
+	if err != nil {
+        return "", ErrBlockNotFound
+    }
+
+	serializableNodes := trie.ConvertToSerializableNodes(storageNodes)
+
+    // Serialize to JSON
+    jsonBytes, err := json.Marshal(serializableNodes)
+    if err != nil {
+        return "", ErrFailedToSerialize
+    }
+	return string(jsonBytes), nil
 }
 
 func (h *Handler) Methods() ([]jsonrpc.Method, string) { //nolint: funlen
@@ -329,6 +362,11 @@ func (h *Handler) Methods() ([]jsonrpc.Method, string) { //nolint: funlen
 			Name:    "starknet_getBlockWithReceipts",
 			Params:  []jsonrpc.Parameter{{Name: "block_id"}},
 			Handler: h.BlockWithReceipts,
+		},
+		{
+			Name:    "juno_getNodesFromRoot",
+			Params:  []jsonrpc.Parameter{{Name: "key"}},
+			Handler: h.GetNodesFromRoot,
 		},
 	}, "/v0_7"
 }
